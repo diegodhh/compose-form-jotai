@@ -5,7 +5,7 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "repository": {
-    "url": "https://github.com/diegodhh/jotai-compose"
+    "url": "https://github.com/diegodhh/compose-form-jotai"
   },
   "scripts": {
     "build": "tsup",
