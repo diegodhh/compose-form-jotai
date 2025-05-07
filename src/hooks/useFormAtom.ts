@@ -2,13 +2,12 @@
 
 import { useAtom } from "jotai";
 import { useCallback, useMemo } from "react";
-import { FormAtom } from "../../types";
-import { FormAction } from "../types";
+import { FormAction } from "../enhancers/types";
+import { FormAtom } from "../types";
 
-export const useFormAtom = <T extends { [key: string]: unknown }>(
-  formAtom: FormAtom<T>,
-) => {
+export const useFormAtom = <T extends object>(formAtom: FormAtom<T>) => {
   const [formData, dispatch] = useAtom(formAtom);
+
   const actionTypes = Object.values([
     FormAction.onSubmit,
     FormAction.onChange,

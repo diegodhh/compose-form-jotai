@@ -27,7 +27,12 @@ export const createHandleSubmit = <T extends object>({
   });
   return atomEnhancer<
     { values: Partial<T>; errors: FormErrors<T>; errorsTouched: FormErrors<T> },
-    DispatcherAction<FormAction.onSubmit, never>
+    DispatcherAction<FormAction.onSubmit, React.FormEvent<HTMLFormElement>>,
+    {
+      isSubmiting: boolean;
+      hasSubmitted: boolean;
+      errorsTouched: FormErrors<T>;
+    }
   >(
     // Read function
     (get, { last }) => {
@@ -43,8 +48,6 @@ export const createHandleSubmit = <T extends object>({
           };
       return { isSubmiting, hasSubmitted, ...errorsTouched };
     },
-
-    // Write function
     (
       get,
       set,
