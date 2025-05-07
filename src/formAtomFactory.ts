@@ -24,6 +24,6 @@ export const createFormAtom = <T extends object>({
     valuesAtom(),
     createTouchedDecorator<T>(initialTouched),
     createErrorDerivation<T>(ValidatorC),
-    createHandleSubmit<T>({ handleSubmitAtom }),
+    createHandleSubmit({ handleSubmitAtom }),
   );
 };

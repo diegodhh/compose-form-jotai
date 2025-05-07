@@ -1,19 +1,20 @@
 /** @format */
 
 import { validateSync } from "class-validator";
-import { atomEnhancer } from "jotai-composer";
+import { atomEnhancer, toEnhancer } from "jotai-composer";
+import { pipe } from "remeda";
 import { FormErrors, TouchedState } from "./types";
 
 export const createErrorDerivation = <T extends object>(
   ValidatorC: new () => Object,
 ) => {
-  return atomEnhancer<
+  const errorsEnhancer = atomEnhancer<
     { values: Partial<T>; touched: TouchedState<T> },
     never,
-    { errors: FormErrors<T>; errorsTouched: FormErrors<T> }
+    { errors: FormErrors<T> }
   >((get, { last }) => {
     const validator = new ValidatorC();
-    const { values, touched } = last || {};
+    const { values } = last || {};
     const tovalidate = Object.assign(validator, values);
     const validationErrors = validateSync(tovalidate, {
       skipMissingProperties: true,
@@ -26,12 +27,23 @@ export const createErrorDerivation = <T extends object>(
       return acc;
     }, {} as FormErrors<T>);
 
+    return { errors };
+  });
+  const touchedErrorsEnhancer = atomEnhancer<
+    { errors: FormErrors<T>; touched: TouchedState<T> },
+    never,
+    { errorsTouched: FormErrors<T> }
+  >((_get, { last }): { errorsTouched: FormErrors<T> } => {
+    const { errors, touched } = last || {};
     const errorsTouched = Object.entries(errors).reduce((acc, [key, value]) => {
       if (value && touched?.[key as keyof T]) {
         acc[key as keyof T] = value as string;
       }
       return acc;
     }, {} as FormErrors<T>);
-    return { errors, errorsTouched };
+    return { errorsTouched };
+  });
+  return toEnhancer({
+    composed: pipe(errorsEnhancer(), touchedErrorsEnhancer),
   });
 };
