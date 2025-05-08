@@ -1,12 +1,12 @@
 /** @format */
 
-import { Atom, atom } from "jotai";
+import { atom } from "jotai";
 import { atomEnhancer, DispatcherAction } from "jotai-composer";
 import { FormAction, FormErrors } from "./types";
 export const createHandleSubmit = <T extends object>({
-  handleSubmitAtom,
+  handleSubmit,
 }: {
-  handleSubmitAtom: Atom<(payload: Partial<T>) => Promise<unknown | void>>;
+  handleSubmit: (payload: Partial<T>) => Promise<unknown | void>;
 }) => {
   const atomPromise = atom<Promise<unknown> | unknown>(null);
   const hasSubmittedAtom = atom(false);
@@ -61,7 +61,6 @@ export const createHandleSubmit = <T extends object>({
         set(hasSubmittedAtom, true);
         const { values, errors } = last;
         const isValid = Object.keys(errors).length === 0;
-        const handleSubmit = get(handleSubmitAtom);
         if (isValid) {
           set(atomPromise, handleSubmit(values));
           set(CheckIfPromiseIsResolve, undefined);

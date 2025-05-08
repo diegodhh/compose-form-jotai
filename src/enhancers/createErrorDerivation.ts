@@ -1,8 +1,8 @@
 /** @format */
 
 import { validateSync } from "class-validator";
-import { atomEnhancer, toEnhancer } from "jotai-composer";
-import { pipe } from "remeda";
+import { atomEnhancer } from "jotai-composer";
+import { piped } from "remeda";
 import { FormErrors, TouchedState } from "./types";
 
 export const createErrorDerivation = <T extends object>(
@@ -13,6 +13,7 @@ export const createErrorDerivation = <T extends object>(
     never,
     { errors: FormErrors<T> }
   >((get, { last }) => {
+    console.log("last", last.values);
     const validator = new ValidatorC();
     const { values } = last || {};
     const tovalidate = Object.assign(validator, values);
@@ -26,7 +27,7 @@ export const createErrorDerivation = <T extends object>(
 
       return acc;
     }, {} as FormErrors<T>);
-
+    console.log("errors", errors);
     return { errors };
   });
   const touchedErrorsEnhancer = atomEnhancer<
@@ -43,7 +44,5 @@ export const createErrorDerivation = <T extends object>(
     }, {} as FormErrors<T>);
     return { errorsTouched };
   });
-  return toEnhancer({
-    composed: pipe(errorsEnhancer(), touchedErrorsEnhancer),
-  });
+  return piped(errorsEnhancer, touchedErrorsEnhancer);
 };

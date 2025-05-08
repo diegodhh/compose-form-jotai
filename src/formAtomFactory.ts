@@ -1,7 +1,6 @@
 /** @format */
 
-import { Atom } from "jotai";
-import { pipe } from "remeda";
+import { piped } from "remeda";
 import { createErrorDerivation } from "./enhancers/createErrorDerivation";
 import { createHandleSubmit } from "./enhancers/createHandleSubmit";
 import { createValues } from "./enhancers/formValues";
@@ -12,18 +11,18 @@ export const createFormAtom = <T extends object>({
   initialValues,
   ValidatorC,
   initialTouched,
-  handleSubmitAtom,
+  handleSubmit,
 }: {
   initialTouched?: TouchedState<T>;
   initialValues?: Partial<T>;
   ValidatorC: new () => Object;
-  handleSubmitAtom: Atom<(payload: Partial<T>) => Promise<unknown | void>>;
+  handleSubmit: (payload: Partial<T>) => Promise<unknown | void>;
 }) => {
-  const valuesAtom = createValues<T>(initialValues || {});
-  return pipe(
-    valuesAtom(),
+  const run = piped(
+    createValues<T>(initialValues || {}),
     createTouchedDecorator<T>(initialTouched),
     createErrorDerivation<T>(ValidatorC),
-    createHandleSubmit({ handleSubmitAtom }),
+    createHandleSubmit<T>({ handleSubmit }),
   );
+  return run(undefined);
 };
