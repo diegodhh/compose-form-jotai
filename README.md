@@ -75,12 +75,12 @@ import { createFormAtom } from "compose-form-jotai";
 import { atom } from "jotai";
 
 const userFormAtom = createFormAtom<UserFormData>({
-  handleSubmitAtom: atom(() => async (data) => {
+  handleSubmit: async (data) => {
     console.log("Form submitted with data:", data);
     // Simulate API call with a delay
     await new Promise((resolve) => setTimeout(resolve, 1000));
     // You could perform validation or send data to a server here
-  }),
+  },
   initialValues: initialFormData,
   ValidatorC: UserFormValidator,
 });
